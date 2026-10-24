@@ -1,3 +1,8 @@
 import { Routes } from '@angular/router';
-
-export const routes: Routes = [];
+import { TodayPage } from './today.page';
+import { HistoryPage } from './history.page';
+export const routes: Routes = [
+  { path: '', component: TodayPage },
+  { path: 'history', component: HistoryPage },
+  { path: '**', redirectTo: '' },
+];
