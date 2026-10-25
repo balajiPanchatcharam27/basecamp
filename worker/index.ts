@@ -8,6 +8,10 @@ async function batch(db: any, stmts: any[]) {
 
 export default {
   async fetch(req: Request, env: any): Promise<Response> {
+  try { return await (this as any).handle(req, env); }
+  catch (e: any) { return json({ error: String(e?.message ?? e) }, 500); }
+},
+  async handle(req: Request, env: any): Promise<Response> {
     const url = new URL(req.url);
     if (url.pathname !== '/api/sync') return env.ASSETS.fetch(req);
     if (req.method !== 'POST') return json({ error: 'method' }, 405);
