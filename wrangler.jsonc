@@ -9,7 +9,7 @@
     "run_worker_first": ["/api/*"]
   },
   "d1_databases": [
-    { "binding": "basecamp_db",
+    { "binding": "DB",
 			"database_name": "basecamp-db",
 			"database_id": "84aa575c-3218-4311-a91a-0e511505f462" }
   ],
