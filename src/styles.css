@@ -24,3 +24,4 @@ input:focus,select:focus{outline:0;border-color:var(--ac)}
 nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--bg);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom)}
 nav a{flex:1;text-align:center;padding:15px;color:var(--mut);text-decoration:none;font:800 14px system-ui;text-transform:uppercase;letter-spacing:.06em;border-top:3px solid transparent}
 nav a.on{color:var(--ac);border-top-color:var(--ac)}
+.btn{background:var(--ac);color:var(--acx);border:0;border-radius:10px;padding:12px 18px;margin:6px 8px 0 0;font:800 14px system-ui;text-transform:uppercase}

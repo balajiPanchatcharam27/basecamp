@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, date TEXT NOT NULL, updated_at INTEGER NOT NULL, data TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_sessions_date ON sessions(date);
+CREATE TABLE IF NOT EXISTS programs (id TEXT PRIMARY KEY, start_date TEXT NOT NULL, updated_at INTEGER NOT NULL, data TEXT NOT NULL);

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Store } from './store.service';
 import { db } from './db';
 import { Exercise, PlanDay, SetLog, addDays, iso } from './models';
+import { Sync } from './sync.service';
 
 interface Row { ex: Exercise; sets: SetLog[]; last?: SetLog[]; best?: { weight: number; reps: number }; bestPace?: number }
 const fmtPace = (min: number, km: number) => {
@@ -58,7 +59,7 @@ export class TodayPage implements OnInit {
   done = signal<Set<string>>(new Set());
   dirty = signal(false);
   status = signal('');
-  constructor(private store: Store) {}
+  constructor(private store: Store, private sync: Sync) {}
 
   get date() { return this.dates[this.selected()]; }
   dateLabel() { return new Date(this.date + 'T12:00:00').toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' }); }
@@ -67,6 +68,7 @@ export class TodayPage implements OnInit {
     await this.store.ready();
     await this.refreshDone();
     await this.load();
+    this.sync.run().then(async () => { if (!this.dirty()) { await this.refreshDone(); await this.load(); } });
   }
   async refreshDone() {
     const s = await db.sessions.where('id').anyOf(this.dates).toArray();
@@ -107,10 +109,10 @@ export class TodayPage implements OnInit {
   async save() {
     const has = (s: SetLog) => s.weight != null || s.reps != null || s.distanceKm != null || s.minutes != null;
     const entries = this.rows().map(r => ({ exerciseId: r.ex.id, sets: r.sets.filter(has) })).filter(e => e.sets.length);
-    if (entries.length) await this.store.saveSession({ id: this.date, date: this.date, entries });
-    else await db.sessions.delete(this.date);
+    await this.store.saveSession({ id: this.date, date: this.date, entries });
     await this.refreshDone();
     this.dirty.set(false);
     this.status.set('Saved ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }));
+    this.sync.run();
   }
 }

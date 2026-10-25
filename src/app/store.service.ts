@@ -8,7 +8,7 @@ export class Store {
   async init() {
     if ((await db.programs.count()) === 0) {
       const start = iso(new Date());
-      await db.programs.add({ id: crypto.randomUUID(), startDate: start, editableFrom: addDays(start, 42), days: SEED_PLAN });
+      await db.programs.add({ id: crypto.randomUUID(), startDate: start, editableFrom: addDays(start, 42), days: SEED_PLAN,updatedAt: Date.now() });
     }
     navigator.storage?.persist?.();
   }
@@ -20,7 +20,7 @@ export class Store {
   async isLocked(): Promise<boolean> { return iso(new Date()) < (await this.program()).editableFrom; }
   async savePlan(days: PlanDay[]) { // new version, so old history keeps its names
     const start = iso(new Date());
-    await db.programs.add({ id: crypto.randomUUID(), startDate: start, editableFrom: addDays(start, 42), days });
+    await db.programs.add({ id: crypto.randomUUID(), startDate: start, editableFrom: addDays(start, 42), days , updatedAt: Date.now()});
   }
   async stats(exerciseId: string, beforeDate: string) {
     const past = (await db.sessions.where('date').below(beforeDate).sortBy('date')).reverse();
@@ -35,8 +35,8 @@ export class Store {
     }
     return { last, best, bestPace };
   }
-  saveSession(s: Session) { return db.sessions.put(s); }  // id = date, so one session per day
-  history() { return db.sessions.orderBy('date').reverse().toArray(); }
+  saveSession(s: Session) { return db.sessions.put({ ...s, updatedAt: Date.now() }); }
+  async history() { return (await db.sessions.orderBy('date').reverse().toArray()).filter(s => s.entries.length); }
   private _ready?: Promise<void>;
   ready() { return (this._ready ??= this.init()); }
 }
